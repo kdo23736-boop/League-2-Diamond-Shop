@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEAGUE 2 DIAMOND SHOP</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#10172d;color:white;font-family:Arial,sans-serif}
+h1{color:#a78bfa;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#aab9d3;font-size:13px}
+h3{margin:20px 0 10px;color:#c4b5fd}
+input,select{width:100%;padding:14px;margin:6px 0;border:1px solid #405078;border-radius:10px;background:#263653;color:white;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#25365d;border:2px solid transparent;border-radius:12px;padding:14px;cursor:pointer}
+.card.active{border-color:#b9a0ff;background:#5941a9}
+.card b{display:block;margin-top:8px;color:#d7c8ff}
+button{width:100%;padding:15px;border:0;border-radius:11px;background:#7045c2;color:white;font-weight:bold;font-size:16px;margin-top:12px}
+.box{background:#1d2b49;border-radius:12px;padding:14px;margin-top:10px}
+.small{font-size:12px;color:#b7c5df}
+</style>
+</head>
+<body>
+
+<h1>💎 LEAGUE 2</h1>
+<div class="sub">DIAMOND SHOP • PREMIUM SERVICE</div>
+
+<div class="box">
+<h3>🎮 Player Information</h3>
+<input id="gameid" placeholder="Enter Game ID">
+<input id="serverid" placeholder="Enter Server ID">
+</div>
+
+<h3>🎫 Pass Packages</h3>
+<div class="grid" id="passes"></div>
+
+<h3>💎 Diamond Packages</h3>
+<div class="grid" id="diamonds"></div>
+
+<h3>⚡ Double Diamond</h3>
+<div class="grid" id="double"></div>
+
+<div class="box">
+<h3>🛒 Selected Order</h3>
+<div id="selected">Package မရွေးရသေးပါ</div>
+</div>
+
+<div class="box">
+<h3>💳 Payment Method</h3>
+<select id="payment">
+<option value="KPay">KPay</option>
+<option value="WavePay">WavePay</option>
+</select>
+<p>KPay: 09422190218</p>
+<button onclick="copyNumber('09422190218')">Copy KPay Number</button>
+<hr>
+<p>WavePay: 09893463559</p>
+<button onclick="copyNumber('09893463559')">Copy Wave Number</button>
+
+<h3>📸 Payment Receipt</h3>
+<input type="file" id="receipt" accept="image/*">
+<p class="small">ငွေလွှဲပြေစာ Screenshot တင်ပါ။</p>
+</div>
+
+<button onclick="submitOrder()">CONFIRM ORDER</button>
+
+<div id="result" class="box" hidden></div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
+
+const products = [
+["Weekly Pass",6900,"passes"],
+["Twilight Pass",34500,"passes"],
+["86 Diamond",5800,"diamonds"],
+["172 Diamond",11000,"diamonds"],
+["257 Diamond",16300,"diamonds"],
+["343 Diamond",21800,"diamonds"],
+["429 Diamond",27000,"diamonds"],
+["514 Diamond",32500,"diamonds"],
+["600 Diamond",37600,"diamonds"],
+["706 Diamond",42900,"diamonds"],
+["878 Diamond",53600,"diamonds"],
+["964 Diamond",58900,"diamonds"],
+["1049 Diamond",64100,"diamonds"],
+["2195 Diamond",127500,"diamonds"],
+["2×50 Double",4100,"double"],
+["2×150 Double",11500,"double"],
+["2×250 Double",17200,"double"],
+["2×500 Double",33700,"double"]
+];
+
+let selected = null;
+
+function render(){
+ products.forEach(p=>{
+  const el=document.createElement("div");
+  el.className="card";
+  el.innerHTML=`<strong>${p[0]}</strong><b>${p[1].toLocaleString()} Ks</b>`;
+  el.onclick=()=>{
+   selected=p;
+   document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
+   el.classList.add("active");
+   document.getElementById("selected").innerHTML=
+    `<b>${p[0]}</b><br>${p[1].toLocaleString()} Ks`;
+  };
+  document.getElementById(p[2]).appendChild(el);
+ });
+}
+
+function copyNumber(number){
+ navigator.clipboard.writeText(number);
+ alert("Copied: "+number);
+}
+
+function submitOrder(){
+ const game=document.getElementById("gameid").value.trim();
+ const server=document.getElementById("serverid").value.trim();
+ const receipt=document.getElementById("receipt").files[0];
+ const payment=document.getElementById("payment").value;
+
+ if(!game||!server||!selected||!receipt){
+  alert("Game ID, Server ID, Package နဲ့ Receipt အားလုံးဖြည့်ပါ။");
+  return;
+ }
+
+ const result=document.getElementById("result");
+ result.hidden=false;
+ result.innerHTML=`
+ <h3>Order Preview</h3>
+ Game ID: ${game}<br>
+ Server ID: ${server}<br>
+ Package: ${selected[0]}<br>
+ Price: ${selected[1].toLocaleString()} Ks<br>
+ Payment: ${payment}<br>
+ Receipt: ${receipt.name}<br><br>
+ <b>Order အချက်အလက် ပြည့်စုံပါပြီ။</b><br>
+ <small>Backend ချိတ်ဆက်ပြီးမှ Admin ဆီ အမှန်တကယ် ပို့နိုင်ပါမယ်။</small>
+ `;
+}
+render();
+</script>
+</body>
+</html>
